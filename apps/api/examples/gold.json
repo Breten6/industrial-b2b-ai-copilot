@@ -1,0 +1,12 @@
+{
+  "fixture-s2.pdf": [
+    ["operating_frequency", "900 kHz", 1],
+    ["depth_rating", "300 m", 1],
+    ["interface", "Ethernet", 2],
+    ["supply_voltage", "24 V DC", 2]
+  ],
+  "fixture-s4.pdf": [
+    ["operating_frequency", "450 kHz", 1],
+    ["maximum_range", "60 m", 1]
+  ]
+}

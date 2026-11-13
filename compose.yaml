@@ -1,0 +1,66 @@
+name: b2b-sales-copilot
+
+x-api: &api
+  image: b2b-sales-copilot-api:local
+  pull_policy: never
+  environment: &api-environment
+    POSTGRES_HOST: db
+    POSTGRES_DB: copilot
+    POSTGRES_USER: copilot
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-demo-only}
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.7-pg17-bookworm
+    environment:
+      POSTGRES_DB: copilot
+      POSTGRES_USER: copilot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-demo-only}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "copilot", "-d", "copilot", "-h", "127.0.0.1"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *api
+    build: ./apps/api
+    command: ["python", "-m", "app.migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *api
+    environment:
+      <<: *api-environment
+      COPILOT_STORAGE_DIR: /var/lib/copilot/pdfs
+      COPILOT_PROVIDER: ${COPILOT_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_EXTRACTION_MODEL: ${OPENAI_EXTRACTION_MODEL:-gpt-4o-mini}
+    volumes:
+      - pdfdata:/var/lib/copilot/pdfs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/healthz', timeout=2).close()"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build: ./apps/web
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  pdfdata:

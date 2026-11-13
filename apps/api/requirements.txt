@@ -1,0 +1,30 @@
+# Resolved for Python 3.12. Includes local test dependencies.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.16.0
+click==8.5.1
+colorama==0.4.6; sys_platform == "win32"
+coverage==7.17.2
+fastapi==0.162.2
+h11==0.16.0
+httpcore2==2.16.0
+httpx2==2.16.0
+idna==3.20
+iniconfig==2.3.1
+opentelemetry-api==1.45.2
+packaging==26.3
+pluggy==1.7.0
+psycopg==3.3.4
+psycopg-binary==3.3.4
+pydantic==2.14.3
+pydantic-core==2.50.4
+pygments==2.21.0
+pypdf==7.0.0
+pytest==9.0.2
+pytest-cov==7.0.0
+starlette==1.10.0
+truststore==0.10.5
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+tzdata==2026.6; sys_platform == "win32"
+uvicorn==0.41.0
